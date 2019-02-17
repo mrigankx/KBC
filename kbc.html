@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	<title>KBC</title>
+	<style>
+		body{
+	font-size: 20px;
+	font-family: sans-serif;
+	color: #333;
+}
+.question{
+	font-weight: 600;
+}
+.answers {
+    margin-bottom: 20px;
+}
+#submit:hover{
+	background-color: #3a8;
+}
+.container{
+	width: 400px;
+	background-color: pink;
+}
+#rules{
+	margin-left: 100px;
+}
+#finalResults{
+	background-color: blue;
+	padding-left: 10px;
+	margin-top: 100px;
+	margin-left: 500px;
+}
+</style>
+</head>
+<body>
+	<h1 align="center"><b><u>Quiz</u></b></h1>
+	<div id="rules">
+		<h3><b><u>Rules:-</u></b></h3>
+		<ul>
+			<li>There are 10 Questions,each contains 3 marks.</li>
+			<li>For each <b>right answer</b> you will be awarded with <b>3 marks.</b></li>
+			<li>For each <b>wrong answer 1 mark</b> will be deducted from existing mark.</li>
+			<li>You <b>can't skip</b> any question.Each and every question is Mandatory.</li>
+			<li>If your mark is greater than 20,than only you will <b>win.</b></li>
+		</ul>
+	</div><hr>
+<div class="container">
+	<div id="quiz"></div>
+	<button id="submit" class="btn btn-primary">Get Results</button>
+		<div id="remark"></div>
+		<div id="results"></div>
+		<div id="score"></div>
+</div>
+<script>
+	var quizContainer=document.getElementById("quiz");
+		var resultsContainer=document.getElementById("results");
+		var submitButton=document.getElementById("submit");
+		var scoreContainer=document.getElementById("score");
+		var remarkContainer=document.getElementById("remark");
+		var myQuestions=[
+			{
+		question: "What is 10/2?",
+		answers: {
+			a: '3',
+			b: '5',
+			c: '115'
+		},
+		correctAnswer: 'b'
+	},
+	{
+		question: "What is 30/3?",
+		answers: {
+			a: '3',
+			b: '5',
+			c: '10'
+		},
+		correctAnswer: 'c'
+	},
+	{
+		question: "What is 5/2?",
+		answers: {
+			a: '3',
+			b: '2.5',
+			c: '1.5'
+		},
+		correctAnswer: 'b'
+	},
+	{
+		question: "What is 3/3?",
+		answers: {
+			a: '3',
+			b: '9',
+			c: '1'
+		},
+		correctAnswer: 'c'
+	},
+	{
+		question: "What is 1/0?",
+		answers: {
+			a: '1',
+			b: '0',
+			c: 'undetermined'
+		},
+		correctAnswer: 'c'
+	},
+	{
+		question: "What is 0/2?",
+		answers: {
+			a: '0',
+			b: '2',
+			c: '1'
+		},
+		correctAnswer: 'a'
+	},
+	{
+		question: "What is 9/3?",
+		answers: {
+			a: '9',
+			b: '1',
+			c: '3'
+		},
+		correctAnswer: 'c'
+	},
+	{
+		question: "What is 0/0?",
+		answers: {
+			a: '0',
+			b: 'undetermined',
+			c: '1'
+		},
+		correctAnswer: 'b'
+	},
+	{
+		question: "What is 2/1?",
+		answers: {
+			a: '2',
+			b: '1',
+			c: '0'
+		},
+		correctAnswer: 'a'
+	},
+	{
+		question: "What is (4/2)*2?",
+		answers: {
+			a: '8',
+			b: '4',
+			c: '6'
+		},
+		correctAnswer: 'b'
+	},
+	];
+	generateQuiz(myQuestions,quizContainer,resultsContainer,submitButton);
+	function generateQuiz(questions,quizContainer,resultsContainer,submitButton){
+		
+		function showQuestions(questions,quizContainer){
+			
+			var output=[];
+			var answers;
+			for(var i=0;i<questions.length;i++){
+
+				answers=[];
+				for(letter in questions[i].answers){
+					answers.push('<label>'+'<input type="radio" name="question'+i+'" value="'+letter+'">'+letter+': '+questions[i].answers[letter]+'</label><br>'
+						);
+				}
+				output.push(
+					'<div class="question">'+(i+1)+" > " + questions[i].question + '</div>'
+			+ '<div class="answers">' + answers.join('') + '</div><hr>'
+		
+					);
+			}
+			quizContainer.innerHTML=output.join('');
+
+			}
+			showQuestions(questions,quizContainer);
+
+		function showResults(questions,quizContainer,resultsContainer){
+				var answerContainers = quizContainer.querySelectorAll('.answers');
+				var userAnswer = '';
+				var numCorrect = 0;
+				var score=0;
+				for(var i=0; i<questions.length; i++){
+					userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
+					if(userAnswer===questions[i].correctAnswer){
+						numCorrect++;
+						score=score+3;
+						answerContainers[i].style.color = 'green';
+		}
+					else{
+						score=score-1;
+			answerContainers[i].style.color = 'red';
+		}
+	}
+	resultsContainer.innerHTML=numCorrect+" out of "+questions.length+" is correct.";
+	scoreContainer.innerHTML="Score is-> <b>"+score+ "</b>";
+	if (score>20) {
+		window.alert("You Win!\nYour Score is: "+score);
+	}
+	else{
+		window.alert("You Lose!\nYour Score is: "+score);
+	}
+		}
+
+		showQuestions(questions,quizContainer);
+
+		submitButton.onclick=function(){
+			showResults(questions,quizContainer,resultsContainer);
+		}
+	}
+
+</script>
+
+</body>
+</html>
